@@ -74,7 +74,7 @@ export function ProductPage() {
   return (
     <Card
       key={product.id}
-      className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+      className="mt-6 group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
     >
       {/* Product Images */}
       <div className=" max-w-[700px] mx-auto flex justify-center p-4 p-6">

@@ -65,67 +65,67 @@ export function PaginateResponse({
                       hover:-translate-y-1
                       hover:shadow-xl
                       hover:border-gray-300`}
-                    onClick={() => navigate(`/product/${product.id}`)}
                   >
-                    <div className="flex justify-center">
-                      {" "}
-                      {isFetching ? (
-                        <Skeleton className="h-[400px] w-[400px]"></Skeleton>
-                      ) : (
-                        <SmartImage
-                          className="w-[400px] h-[400px]"
-                          src={product.thumbnail}
-                        />
-                      )}{" "}
-                    </div>
-
-                    <CardHeader className="flex flex-col gap-5 p-6">
-                      <CardTitle className="space-y-5">
+                    <div onClick={() => navigate(`/product/${product.id}`)}>
+                      <div className="flex justify-center">
                         {" "}
-                        {
-                          <div className="space-y-4">
-                            <p className="text-3xl font-bold tracking-tight text-black">
-                              {" "}
-                              ${product.price}{" "}
-                            </p>
-                            <div className="flex items-start justify-between gap-3">
-                              <span className="font-semibold text-gray-900 leading-6 line-clamp-2">
-                                {product.title}
-                              </span>
-                              {product.brand && (
-                                <span className=" rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 whitespace-nowrap">
-                                  {product.brand}
+                        {isFetching ? (
+                          <Skeleton className="h-[400px] w-[400px]"></Skeleton>
+                        ) : (
+                          <SmartImage
+                            className="w-[400px] h-[400px]"
+                            src={product.thumbnail}
+                          />
+                        )}{" "}
+                      </div>
+
+                      <CardHeader className="flex flex-col gap-5 p-6">
+                        <CardTitle className="space-y-5">
+                          {" "}
+                          {
+                            <div className="space-y-4">
+                              <p className="text-3xl font-bold tracking-tight text-black">
+                                {" "}
+                                ${product.price}{" "}
+                              </p>
+                              <div className="flex items-start justify-between gap-3">
+                                <span className="font-semibold text-gray-900 leading-6 line-clamp-2">
+                                  {product.title}
                                 </span>
-                              )}
+                                {product.brand && (
+                                  <span className=" rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 whitespace-nowrap">
+                                    {product.brand}
+                                  </span>
+                                )}
+                              </div>
                             </div>
+                          }{" "}
+                        </CardTitle>
+
+                        <CardDescription className="space-y-5">
+                          <div className="text-sm leading-6 text-gray-500 line-clamp-3">
+                            {product.description}
                           </div>
-                        }{" "}
-                      </CardTitle>
+                          <div className=" flex items-center justify-between border-t border-gray-100 pt-4 ">
+                            <span className="text-gray-500 font-medium">
+                              ⭐ Rating
+                            </span>
 
-                      <CardDescription className="space-y-5">
-                        <div className="text-sm leading-6 text-gray-500 line-clamp-3">
-                          {product.description}
-                        </div>
-                        <div className=" flex items-center justify-between border-t border-gray-100 pt-4 ">
-                          <span className="text-gray-500 font-medium">
-                            ⭐ Rating
-                          </span>
-
-                          <span className="rounded-full bg-yellow-50 px-3 py-1 text-sm font-semibold text-yellow-700">
-                            {product.rating}
-                          </span>
-                        </div>
-
-                        <Button
-                          disabled={product.stock === 0}
-                          className={`h-12 w-full rounded-xl text-base font-semibold`}
-                          onClick={() => handleAddToCart(product)}
-                        >
-                          <ShoppingCart className="mr-2 h-5 w-5" />
-                          Add To Cart
-                        </Button>
-                      </CardDescription>
-                    </CardHeader>
+                            <span className="rounded-full bg-yellow-50 px-3 py-1 text-sm font-semibold text-yellow-700">
+                              {product.rating}
+                            </span>
+                          </div>
+                        </CardDescription>
+                      </CardHeader>
+                    </div>
+                    <Button
+                      disabled={product.stock === 0}
+                      className={`h-12 w-full rounded-xl text-base font-semibold`}
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      <ShoppingCart className="mr-2 h-5 w-5" />
+                      Add To Cart
+                    </Button>
                   </Card>
                 );
               })}{" "}

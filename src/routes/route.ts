@@ -1,7 +1,8 @@
+import { CategoryCarousel } from "@/components/dashboard/category.carousel";
+import { DashboardHeader } from "@/components/dashboard/dashboard.header";
 import { PaginatedProducts } from "@/components/dashboard/products.paginated";
 import { AuthGuard } from "@/guards/auth.guard";
 import { CartPage } from "@/pages/cart.page";
-import { Dashboard } from "@/pages/dashboard.page";
 import { LoginPage } from "@/pages/login.page";
 import { ProductPage } from "@/pages/product.page";
 import { createElement } from "react";
@@ -16,33 +17,31 @@ export const routes: RouteObject[] = [
     element: createElement(AuthGuard),
     children: [
       {
-        path: "/dashboard",
-        Component: Dashboard,
-
+        element: createElement(DashboardHeader),
         children: [
           {
-            index: true,
-            Component: PaginatedProducts,
+            path: "/dashboard",
+            element: createElement(CategoryCarousel),
+            children: [
+              {
+                index: true,
+                Component: PaginatedProducts,
+              },
+              {
+                path: "/dashboard/:id",
+                Component: PaginatedProducts,
+              },
+            ],
           },
-          {
-            path: "/dashboard/:id",
-            Component: PaginatedProducts,
-          },
-        ],
-      },
-
-      {
-        element: createElement(Dashboard),
-        children: [
           {
             path: "/product/:pId",
             Component: ProductPage,
           },
+          {
+            path: "/cart",
+            Component: CartPage,
+          },
         ],
-      },
-      {
-        path: "/cart",
-        Component: CartPage,
       },
     ],
   },

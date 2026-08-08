@@ -11,7 +11,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { changeQty, removeItem } from "@/redux/slices/cart.slice";
 import { useNavigate } from "react-router";
 
@@ -23,12 +23,10 @@ export function CartPage() {
 
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const paginatedProducts = useMemo(() => {
-    return cart.products.slice(
-      (pageNo - 1) * itemsPerPage,
-      pageNo * itemsPerPage,
-    );
-  }, [cart.products, pageNo, itemsPerPage]);
+  const paginatedProducts = cart.products.slice(
+    (pageNo - 1) * itemsPerPage,
+    pageNo * itemsPerPage,
+  );
 
   const totalQuantity = cart.products.reduce((acc, item) => acc + item.qty, 0);
 

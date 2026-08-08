@@ -11,7 +11,7 @@ import {
   CarouselNext,
 } from "../ui/carousel";
 import { Card, CardContent } from "../ui/card";
-import { useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router";
 
 export function CategoryCarousel() {
   const navigate = useNavigate();
@@ -31,8 +31,8 @@ export function CategoryCarousel() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-center px-4 py-4">
+    <div className="w-full flex flex-col gap-6 p-6">
+      <div className="flex items-center justify-center">
         <Carousel
           opts={{
             align: "start",
@@ -80,6 +80,7 @@ export function CategoryCarousel() {
           <CarouselNext className="-right-8" />
         </Carousel>
       </div>
+      <Outlet />
     </div>
   );
 }
