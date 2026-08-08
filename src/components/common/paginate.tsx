@@ -51,7 +51,7 @@ export function Paginate({
               // setCurrPage(1);
             }}
           >
-            <SelectTrigger className="h-9 w-[100px] rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700 shadow-none transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">
+            <SelectTrigger className="h-9 w-[100px] rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-medium text-slate-700 shadow-none transition hover:border-[#2874f0]/30 hover:bg-[#2874f0]/5 hover:text-[#2874f0] focus:border-[#2874f0] focus:ring-2 focus:ring-[#2874f0]/20">
               <SelectValue placeholder="5" />
             </SelectTrigger>
 
@@ -61,7 +61,7 @@ export function Paginate({
                   <SelectItem
                     key={noOfItems}
                     value={noOfItems.toString()}
-                    className="cursor-pointer rounded-lg text-sm text-slate-700 focus:bg-indigo-50 focus:text-indigo-700"
+                    className="cursor-pointer rounded-lg text-sm"
                   >
                     {noOfItems}
                   </SelectItem>
@@ -71,13 +71,12 @@ export function Paginate({
           </Select>
         </div>
       </div>
-      <br /> <br />
-      {children}
-      <br /> <br />
+      <div className="py-6">{children}</div>
       <Pagination>
-        <PaginationContent>
+        <PaginationContent className="gap-1.5">
           <PaginationItem>
             <PaginationPrevious
+              className="rounded-full border border-slate-200 text-slate-600 hover:border-[#2874f0]/30 hover:bg-[#2874f0]/5 hover:text-[#2874f0]"
               onClick={() =>
                 setCurrPage((curr) => (curr > 1 ? curr - 1 : curr))
               }
@@ -88,11 +87,17 @@ export function Paginate({
           </PaginationItem>
 
           {Array.from({ length: Math.min(3, totalPages) }).map((_, idx) => {
+            const isActive = startPage + idx === currPage;
             return (
               <PaginationItem key={startPage + idx}>
                 <PaginationLink
                   onClick={() => setCurrPage(startPage + idx)}
-                  isActive={startPage + idx === currPage}
+                  isActive={isActive}
+                  className={
+                    isActive
+                      ? "rounded-full border-[#2874f0] bg-[#2874f0] text-white hover:bg-[#1e5fd1]"
+                      : "rounded-full border border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-50"
+                  }
                 >
                   {" "}
                   {startPage + idx}{" "}
@@ -103,6 +108,7 @@ export function Paginate({
 
           <PaginationItem>
             <PaginationNext
+              className="rounded-full border border-slate-200 text-slate-600 hover:border-[#2874f0]/30 hover:bg-[#2874f0]/5 hover:text-[#2874f0]"
               onClick={() =>
                 setCurrPage((curr) => (curr < totalPages ? curr + 1 : curr))
               }

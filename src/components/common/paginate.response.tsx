@@ -1,5 +1,5 @@
 import type { Product, ProductApiRes } from "@/types/products.type";
-import { Paginate, type paginationProps } from "./paginate";
+import { Paginate } from "./paginate";
 import { Skeleton } from "../ui/skeleton";
 import SmartImage from "../ui/smartImg";
 import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
@@ -28,16 +28,16 @@ export function PaginateResponse({
 }: PaginateResponseProps) {
   const navigate = useNavigate();
   const dispath = useAppDispatch();
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = (product: Product, qty: number) => {
     dispath(
       addItem({
         product,
-        qty: 1,
+        qty,
       }),
     );
   };
   return (
-    <div className={`w-full bg-[#fafafa] min-h-screen p-6`}>
+    <div className={`w-full`}>
       {data?.products && data.products.length > 0 && (
         <div className="h-full w-full">
           <Paginate
@@ -54,6 +54,7 @@ export function PaginateResponse({
                   <Card
                     key={product.id}
                     className={`group
+                      cursor-pointer
                       overflow-hidden
                       rounded-2xl
                       border
@@ -64,16 +65,16 @@ export function PaginateResponse({
                       duration-300
                       hover:-translate-y-1
                       hover:shadow-xl
-                      hover:border-gray-300`}
+                      hover:border-[#2874f0]/30`}
                   >
                     <div onClick={() => navigate(`/product/${product.id}`)}>
-                      <div className="flex justify-center">
+                      <div className="flex justify-center bg-slate-50">
                         {" "}
                         {isFetching ? (
-                          <Skeleton className="h-[400px] w-[400px]"></Skeleton>
+                          <Skeleton className="h-[280px] w-full"></Skeleton>
                         ) : (
                           <SmartImage
-                            className="w-[400px] h-[400px]"
+                            className="h-[280px] w-full object-contain p-6 transition-transform duration-300 group-hover:scale-105"
                             src={product.thumbnail}
                           />
                         )}{" "}
@@ -84,7 +85,7 @@ export function PaginateResponse({
                           {" "}
                           {
                             <div className="space-y-4">
-                              <p className="text-3xl font-bold tracking-tight text-black">
+                              <p className="text-3xl font-bold tracking-tight text-[#2874f0]">
                                 {" "}
                                 ${product.price}{" "}
                               </p>
@@ -120,8 +121,10 @@ export function PaginateResponse({
                     </div>
                     <Button
                       disabled={product.stock === 0}
-                      className={`h-12 w-full rounded-xl text-base font-semibold`}
-                      onClick={() => handleAddToCart(product)}
+                      className={`h-12 w-full rounded-xl bg-[#fb641b] text-base font-semibold text-white hover:bg-[#e15615]`}
+                      onClick={() =>
+                        handleAddToCart(product, product.minimumOrderQuantity)
+                      }
                     >
                       <ShoppingCart className="mr-2 h-5 w-5" />
                       Add To Cart

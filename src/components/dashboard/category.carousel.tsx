@@ -10,7 +10,6 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "../ui/carousel";
-import { Card, CardContent } from "../ui/card";
 import { Outlet, useNavigate } from "react-router";
 
 export function CategoryCarousel() {
@@ -31,54 +30,72 @@ export function CategoryCarousel() {
   }
 
   return (
-    <div className="w-full flex flex-col gap-6 p-6">
-      <div className="flex items-center justify-center">
-        <Carousel
-          opts={{
-            align: "start",
-          }}
-          className="mx-auto w-full max-w-3xl"
-        >
-          {isError && (
-            <p className="flex aspect-square items-center justify-center p-4">
-              {" "}
-              Failed to load{" "}
-            </p>
-          )}
-          {isFetching && (
-            <div className="flex justify-center">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-600 border-t-transparent"></div>
-            </div>
-          )}
-          {data && (
-            <CarouselContent className="w-full">
-              {(data as Category[]).map((category) => (
-                <CarouselItem
-                  key={category.slug}
-                  className="basis-1/4 sm:basis-1/4"
-                >
-                  <div className="p-1">
-                    <Card
-                      className="h-[100px]"
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6">
+      <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <h2 className="mb-4 text-sm font-bold tracking-wide text-slate-500 uppercase">
+          Shop by category
+        </h2>
+        <div className="flex items-center justify-center">
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="mx-auto w-full"
+          >
+            {isError && (
+              <p className="flex aspect-square items-center justify-center p-4 text-sm text-slate-500">
+                {" "}
+                Failed to load{" "}
+              </p>
+            )}
+            {isFetching && (
+              <div className="flex justify-center py-6">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-solid border-[#2874f0] border-t-transparent"></div>
+              </div>
+            )}
+            {data && (
+              <CarouselContent className="w-full -ml-3">
+                {(data as Category[]).map((category, index) => (
+                  <CarouselItem
+                    key={category.slug}
+                    className="basis-1/4 pl-3 sm:basis-1/6 lg:basis-[12%]"
+                  >
+                    <button
                       onClick={() => {
                         navigate(`/dashboard/${category.slug}`);
                       }}
+                      className="group flex w-full flex-col items-center gap-2 rounded-2xl p-2 text-center transition hover:bg-slate-50"
                     >
-                      <CardContent className="flex aspect-square items-center justify-center h-full">
-                        <span className="text-sm font-semibold">
-                          {category.name}
-                        </span>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          )}
+                      <span
+                        className="flex aspect-square w-full items-center justify-center rounded-2xl text-xl font-bold text-white shadow-sm transition-transform duration-200 group-hover:-translate-y-1 group-hover:shadow-md"
+                        style={{
+                          background: `linear-gradient(135deg, ${
+                            [
+                              "#2874f0, #5b3df0",
+                              "#fb641b, #f0913d",
+                              "#16a34a, #4ade80",
+                              "#db2777, #f472b6",
+                              "#0891b2, #22d3ee",
+                              "#7c3aed, #a78bfa",
+                            ][index % 6]
+                          })`,
+                        }}
+                      >
+                        {category.name.at(0)?.toUpperCase()}
+                      </span>
+                      <span className="line-clamp-2 text-xs font-medium text-slate-700 capitalize">
+                        {category.name}
+                      </span>
+                    </button>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            )}
 
-          <CarouselPrevious className="-left-8" />
-          <CarouselNext className="-right-8" />
-        </Carousel>
+            <CarouselPrevious className="-left-4 border-slate-200 bg-white shadow-md" />
+            <CarouselNext className="-right-4 border-slate-200 bg-white shadow-md" />
+          </Carousel>
+        </div>
       </div>
       <Outlet />
     </div>

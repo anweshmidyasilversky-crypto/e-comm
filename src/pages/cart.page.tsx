@@ -37,9 +37,24 @@ export function CartPage() {
 
   if (cart.products.length === 0) {
     return (
-      <div className="flex justify-center flex-col">
-        <p> Cart Is Empty </p>
-        <Button onClick={() => navigate("/dashboard")}> Go to home </Button>
+      <div className="mx-auto flex min-h-[60vh] w-full max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-slate-100">
+          <ShoppingCart className="h-9 w-9 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-lg font-semibold text-slate-900">
+            Your cart is empty
+          </p>
+          <p className="mt-1 text-sm text-slate-500">
+            Looks like you haven't added anything yet.
+          </p>
+        </div>
+        <Button
+          className="rounded-full bg-[#2874f0] px-6 hover:bg-[#1e5fd1]"
+          onClick={() => navigate("/dashboard")}
+        >
+          Start Shopping
+        </Button>
       </div>
     );
   }
@@ -73,7 +88,8 @@ export function CartPage() {
                 {paginatedProducts.map((item) => (
                   <Card
                     key={item.product.id}
-                    className="rounded-2xl border border-slate-200 shadow-sm transition hover:shadow-md"
+                    className="cursor-pointer rounded-2xl border border-slate-200 shadow-sm transition hover:shadow-md"
+                    onClick={() => navigate(`/product/${item.product.id}`)}
                   >
                     <CardContent className="flex flex-col gap-5 p-5 md:flex-row md:items-center">
                       {/* Product Image */}
@@ -113,14 +129,18 @@ export function CartPage() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() =>
+                            onClick={(event) => {
+                              event.stopPropagation();
                               dispath(
                                 changeQty({
                                   id: item.product.id,
-                                  qty: Math.max(1, item.qty - 1),
+                                  qty: Math.max(
+                                    item.product.minimumOrderQuantity,
+                                    item.qty - 1,
+                                  ),
                                 }),
-                              )
-                            }
+                              );
+                            }}
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
@@ -132,14 +152,18 @@ export function CartPage() {
                           <Button
                             size="icon"
                             variant="ghost"
-                            onClick={() =>
+                            onClick={(event) => {
+                              event.stopPropagation();
                               dispath(
                                 changeQty({
                                   id: item.product.id,
-                                  qty: Math.max(1, item.qty + 1),
+                                  qty: Math.min(
+                                    item.product.stock,
+                                    item.qty + 1,
+                                  ),
                                 }),
-                              )
-                            }
+                              );
+                            }}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -149,7 +173,10 @@ export function CartPage() {
                           variant="destructive"
                           size="sm"
                           className="rounded-xl"
-                          onClick={() => dispath(removeItem(item.product.id))}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            dispath(removeItem(item.product.id));
+                          }}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
                           Remove
@@ -223,14 +250,14 @@ export function CartPage() {
             <div className="flex items-center justify-between">
               <span className="text-xl font-bold">Total</span>
 
-              <span className="text-2xl font-bold text-indigo-600">
+              <span className="text-2xl font-bold text-[#2874f0]">
                 ${subtotal.toFixed(2)}
               </span>
             </div>
 
             <Button
               size="lg"
-              className="h-12 w-full rounded-xl text-base font-semibold"
+              className="h-12 w-full rounded-xl bg-[#fb641b] text-base font-semibold text-white shadow-md shadow-orange-200 hover:bg-[#e15615] hover:shadow-lg hover:shadow-orange-200"
             >
               <ShoppingCart className="mr-2 h-5 w-5" />
               Proceed To Checkout
