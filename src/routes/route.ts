@@ -20,26 +20,20 @@ export const routes: RouteObject[] = [
         element: createElement(DashboardHeader),
         children: [
           {
-            path: "/dashboard",
-            element: createElement(CategoryCarousel),
-            children: [
-              {
-                index: true,
-                Component: PaginatedProducts,
-              },
-              {
-                path: "/dashboard/:id",
-                Component: PaginatedProducts,
-              },
-            ],
-          },
-          {
             path: "/product/:pId",
             Component: ProductPage,
           },
           {
             path: "/cart",
             Component: CartPage,
+          },
+          {
+            path: "/dashboard",
+            Component: CategoryCarousel,
+            children: [
+              { index: true, Component: PaginatedProducts },
+              { path: ":id", Component: PaginatedProducts },
+            ],
           },
         ],
       },

@@ -3,14 +3,15 @@ import type { UserSignupPayload } from "@/types/user.signup.payload.type";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { userSignupSchema } from "@/validation/user.signup.schema";
-import { useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 
 import { CardContent } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { CustomInput } from "@/components/common/customInput";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
+import { toast } from "react-toastify";
 
 export function LoginPage() {
   const dispatch = useAppDispatch();
@@ -20,7 +21,13 @@ export function LoginPage() {
     resolver: yupResolver(userSignupSchema),
   });
 
+  const user = useAppSelector((state) => state.user);
+  if (user.firstName.length > 0) {
+    return <Navigate to={{ pathname: "/dashboard" }} />;
+  }
+
   const onsubmit = (data: UserSignupPayload) => {
+    toast(`Login success`, { type: "success" });
     dispatch(updateUser(data));
     navigate("/dashboard");
     reset(userInitialState);
@@ -52,8 +59,8 @@ export function LoginPage() {
               Everything you love, all in one cart.
             </h2>
             <p className="text-sm leading-relaxed text-white/80">
-              Join thousands of shoppers discovering great deals across
-              fashion, electronics, home &amp; more.
+              Join thousands of shoppers discovering great deals across fashion,
+              electronics, home &amp; more.
             </p>
 
             <ul className="space-y-4 pt-2">
@@ -104,109 +111,109 @@ export function LoginPage() {
           </div>
 
           <CardContent className="p-0">
-          <form onSubmit={handleSubmit(onsubmit)} className="space-y-5">
-            <FieldGroup className="space-y-4">
-              {/* First & Last Name Grid */}
-              <div className="grid gap-4 sm:grid-cols-2">
+            <form onSubmit={handleSubmit(onsubmit)} className="space-y-5">
+              <FieldGroup className="space-y-4">
+                {/* First & Last Name Grid */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Field>
+                    <CustomInput
+                      name="firstName"
+                      control={control}
+                      fieldName="First Name"
+                      inptType="text"
+                      placeholder="Enter your first name"
+                      className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
+                    />
+                  </Field>
+
+                  <Field>
+                    <CustomInput
+                      name="lastName"
+                      control={control}
+                      fieldName="Last Name"
+                      inptType="text"
+                      placeholder="Enter your last name"
+                      className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
+                    />
+                  </Field>
+                </div>
+
+                {/* Email Field */}
                 <Field>
                   <CustomInput
-                    name="firstName"
+                    name="email"
                     control={control}
-                    fieldName="First Name"
-                    inptType="text"
-                    placeholder="Enter your first name"
+                    fieldName="Email"
+                    inptType="email"
+                    placeholder="you@example.com"
+                    className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
+                  />
+                  <FieldDescription className="text-[11px] text-gray-400 mt-1">
+                    We'll use this to contact you. We won't share your email.
+                  </FieldDescription>
+                </Field>
+
+                {/* Password Field */}
+                <Field>
+                  <CustomInput
+                    control={control}
+                    name="password"
+                    fieldName="Password"
+                    inptType="password"
+                    placeholder="Enter your password"
                     className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
                   />
                 </Field>
 
+                {/* Gender Field */}
                 <Field>
                   <CustomInput
-                    name="lastName"
                     control={control}
-                    fieldName="Last Name"
-                    inptType="text"
-                    placeholder="Enter your last name"
+                    name="gender"
+                    fieldName="Gender"
+                    inptType="select"
                     className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
                   />
                 </Field>
-              </div>
+              </FieldGroup>
 
-              {/* Email Field */}
-              <Field>
-                <CustomInput
-                  name="email"
-                  control={control}
-                  fieldName="Email"
-                  inptType="email"
-                  placeholder="you@example.com"
-                  className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
-                />
-                <FieldDescription className="text-[11px] text-gray-400 mt-1">
-                  We'll use this to contact you. We won't share your email.
-                </FieldDescription>
-              </Field>
+              {/* Terms and Privacy Text */}
+              <p className="text-[11px] text-gray-500 leading-normal pt-2">
+                By continuing, you agree to the
+                <a href="#" className="text-[#2874f0] mx-1 hover:underline">
+                  Terms of Use
+                </a>{" "}
+                and
+                <a href="#" className="text-[#2874f0] hover:underline">
+                  Privacy Policy
+                </a>
+                .
+              </p>
 
-              {/* Password Field */}
-              <Field>
-                <CustomInput
-                  control={control}
-                  name="password"
-                  fieldName="Password"
-                  inptType="password"
-                  placeholder="Enter your password"
-                  className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
-                />
-              </Field>
-
-              {/* Gender Field */}
-              <Field>
-                <CustomInput
-                  control={control}
-                  name="gender"
-                  fieldName="Gender"
-                  inptType="select"
-                  className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
-                />
-              </Field>
-            </FieldGroup>
-
-            {/* Terms and Privacy Text */}
-            <p className="text-[11px] text-gray-500 leading-normal pt-2">
-              By continuing, you agree to the
-              <a href="#" className="text-[#2874f0] mx-1 hover:underline">
-                Terms of Use
-              </a>{" "}
-              and
-              <a href="#" className="text-[#2874f0] hover:underline">
-                Privacy Policy
-              </a>
-              .
-            </p>
-
-            {/* Action Buttons Panel */}
-            <div className="flex flex-col gap-3 pt-2">
-              {/* Primary Action: Orange Login Button */}
-              <Button
-                type="submit"
-                className="w-full bg-[#fb641b] text-white py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-orange-200 hover:bg-[#e15615] hover:shadow-lg hover:shadow-orange-200 transition duration-150 border-none h-11"
-              >
-                LOGIN
-              </Button>
-
-              <div className="grid grid-cols-2 gap-3">
-                {/* Reset Button */}
+              {/* Action Buttons Panel */}
+              <div className="flex flex-col gap-3 pt-2">
+                {/* Primary Action: Orange Login Button */}
                 <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 text-xs h-10 w-full py-2.5 text-sm font-medium shadow-sm transition duration-150 h-11"
-                  onClick={() => reset(userInitialState)}
+                  type="submit"
+                  className="w-full bg-[#fb641b] text-white py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-orange-200 hover:bg-[#e15615] hover:shadow-lg hover:shadow-orange-200 transition duration-150 border-none h-11"
                 >
-                  Reset Form
+                  LOGIN
                 </Button>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Reset Button */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 text-xs h-10 w-full py-2.5 text-sm font-medium shadow-sm transition duration-150 h-11"
+                    onClick={() => reset(userInitialState)}
+                  >
+                    Reset Form
+                  </Button>
+                </div>
               </div>
-            </div>
-          </form>
-        </CardContent>
+            </form>
+          </CardContent>
         </div>
       </div>
     </div>

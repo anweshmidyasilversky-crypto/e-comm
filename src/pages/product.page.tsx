@@ -228,6 +228,7 @@ export function ProductPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center overflow-hidden rounded-xl border border-slate-200">
               <Button
+                className={`${quantity === product.minimumOrderQuantity ? "bg-red-200 hover:bg-red-200" : ""}`}
                 variant="ghost"
                 size="icon"
                 onClick={() =>
@@ -242,6 +243,7 @@ export function ProductPage() {
               <span className="w-12 text-center font-semibold">{quantity}</span>
 
               <Button
+                className={`${quantity === product.stock ? "bg-red-200 hover:bg-red-200" : ""}`}
                 variant="ghost"
                 size="icon"
                 onClick={() =>

@@ -9,6 +9,8 @@ import { persistor } from "@/redux/store";
 import { Search, ShoppingBag, ShoppingCart, LogOut } from "lucide-react";
 import { removeUser } from "@/redux/slices/user.slice";
 import { clearCart } from "@/redux/slices/cart.slice";
+import { toast } from "react-toastify";
+import { showModal } from "../common/customModal";
 
 export function DashboardHeader() {
   const user = useAppSelector((state) => state.user);
@@ -22,7 +24,25 @@ export function DashboardHeader() {
     dispatch(removeUser());
     dispatch(clearCart());
     persistor.purge();
-    navigate("/");
+    toast.success("Logout Success", {
+      onOpen: () => {
+        navigate("/");
+      },
+    });
+  };
+
+  const showLogoutModal = () => {
+    showModal({
+      options: {
+        title: "Do you want to log out?",
+        icon: "warning",
+        showConfirmButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Logout",
+        cancelButtonText: "Cancel",
+      },
+      onConfirmAction: handleLogout,
+    });
   };
 
   const handleSearch = (term: string) =>
@@ -101,19 +121,11 @@ export function DashboardHeader() {
           {/* Logout */}
           <Button
             variant={"destructive"}
-            onClick={() => handleLogout()}
+            onClick={() => showLogoutModal()}
             className="hidden shrink-0 items-center gap-1.5 rounded-full sm:flex"
           >
             <LogOut className="h-3.5 w-3.5" />
             Logout
-          </Button>
-          <Button
-            variant={"destructive"}
-            size="icon"
-            onClick={() => handleLogout()}
-            className="shrink-0 rounded-full sm:hidden"
-          >
-            <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </div>

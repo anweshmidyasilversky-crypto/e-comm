@@ -44,6 +44,7 @@ export const cartSlice = createSlice({
       const idx = state.products.findIndex(
         (productEntry) => productEntry.product.id === action.payload.id,
       );
+
       if (idx === -1) {
         return;
       }
@@ -58,9 +59,16 @@ export const cartSlice = createSlice({
     },
 
     removeItem(state, action: PayloadAction<number>) {
+      const product = state.products.find(
+        (productEntry) => productEntry.product.id === action.payload,
+      );
+
       state.products = state.products.filter(
         (productEntry) => productEntry.product.id !== action.payload,
       );
+      toast(`Removed ${product?.product.title ?? "Product"}`, {
+        type: "success",
+      });
     },
 
     clearCart(state) {

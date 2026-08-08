@@ -29,6 +29,7 @@ export const userSignupSchema: yup.ObjectSchema<UserSignupPayload> = yup.object(
   {
     firstName: yup
       .string()
+      .trim()
       .required(emptyMsg("First name"))
       .min(
         FIRST_NAME.minLength,
@@ -42,6 +43,7 @@ export const userSignupSchema: yup.ObjectSchema<UserSignupPayload> = yup.object(
     lastName: yup
       .string()
       .defined()
+      .trim()
       .max(LAST_NAME.maxLength, maxLengthMsg("Last name", LAST_NAME.maxLength)),
 
     gender: yup

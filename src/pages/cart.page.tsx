@@ -89,7 +89,9 @@ export function CartPage() {
                   <Card
                     key={item.product.id}
                     className="cursor-pointer rounded-2xl border border-slate-200 shadow-sm transition hover:shadow-md"
-                    onClick={() => navigate(`/product/${item.product.id}`)}
+                    onClick={() => {
+                      navigate(`/product/${item.product.id}`);
+                    }}
                   >
                     <CardContent className="flex flex-col gap-5 p-5 md:flex-row md:items-center">
                       {/* Product Image */}
@@ -127,6 +129,7 @@ export function CartPage() {
                       <div className="flex flex-col items-center gap-4">
                         <div className="flex items-center overflow-hidden rounded-xl border border-slate-200">
                           <Button
+                            className={`${item.qty === item.product.minimumOrderQuantity ? "bg-red-200 hover:bg-red-200" : ""}`}
                             size="icon"
                             variant="ghost"
                             onClick={(event) => {
@@ -150,6 +153,7 @@ export function CartPage() {
                           </span>
 
                           <Button
+                            className={`${item.qty === item.product.stock ? "bg-red-200 hover:bg-red-200" : ""}`}
                             size="icon"
                             variant="ghost"
                             onClick={(event) => {
