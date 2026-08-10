@@ -39,12 +39,14 @@ export const cartSlice = createSlice({
             product: state.products[idx].product,
             qty: Math.min(
               state.products[idx].product.stock,
-              state.products[idx].qty + 1,
+              Math.min(
+                state.products[idx].product.stock,
+                state.products[idx].qty + 1,
+              ),
             ),
           },
           ...state.products.slice(idx + 1),
         ];
-        return;
       } else {
         state.products = [
           ...state.products,

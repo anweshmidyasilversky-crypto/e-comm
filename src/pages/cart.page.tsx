@@ -14,6 +14,7 @@ import {
 import { useState } from "react";
 import { changeQty, removeItem } from "@/redux/slices/cart.slice";
 import { useNavigate } from "react-router";
+import SmartImage from "@/components/ui/smartImg";
 
 export function CartPage() {
   console.log("Rendering cart");
@@ -103,7 +104,7 @@ export function CartPage() {
                     <CardContent className="flex flex-col gap-5 p-5 md:flex-row md:items-center">
                       {/* Product Image */}
 
-                      <img
+                      <SmartImage
                         src={item.product.thumbnail}
                         alt={item.product.title}
                         className="h-28 w-28 rounded-xl bg-slate-50 object-contain p-3"
@@ -212,7 +213,7 @@ export function CartPage() {
             </Paginate>
           </CardContent>
         </Card>
-
+        {/* Billing info */}
         <Card className="sticky top-8 h-fit rounded-3xl border border-slate-200 shadow-sm">
           <CardHeader className="border-b">
             <CardTitle className="text-2xl font-bold">Order Summary</CardTitle>

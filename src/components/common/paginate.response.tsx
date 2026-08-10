@@ -143,7 +143,7 @@ export function PaginateResponse({
                       </CardHeader>
                     </div>
                     <Button
-                      disabled={product.stock === 0}
+                      disabled={product.stock < product.minimumOrderQuantity}
                       className={`h-12 w-full rounded-xl ${inCart ? "bg-[#00ff00]" : "bg-[#fb641b]"} text-base font-semibold text-white hover:${inCart ? "bg-[#00ff00]" : "bg-[#e15615]"} `}
                       onClick={() =>
                         handleAddToCart(product, product.minimumOrderQuantity)
@@ -151,7 +151,7 @@ export function PaginateResponse({
                     >
                       <ShoppingCart className="mr-2 h-5 w-5" />
                       {product.stock < product.minimumOrderQuantity
-                        ? "Out of stock"
+                        ? "Not enought stock"
                         : inCart
                           ? "Already in cart"
                           : "Add To Cart"}

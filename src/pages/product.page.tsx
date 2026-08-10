@@ -260,12 +260,14 @@ export function ProductPage() {
           {/* Add To Cart */}
 
           <Button
-            disabled={product.stock === 0}
+            disabled={product.stock < product.minimumOrderQuantity}
             className={`h-12 w-full rounded-xl bg-[#fb641b] text-base font-semibold text-white shadow-md shadow-orange-200 hover:bg-[#e15615] hover:shadow-lg hover:shadow-orange-200`}
             onClick={() => handleAddToCart(product)}
           >
             <ShoppingCart className="mr-2 h-5 w-5" />
-            Add To Cart
+            {product.stock < product.minimumOrderQuantity
+              ? "Not enough stock"
+              : "Add To Cart"}
           </Button>
         </CardHeader>
 
