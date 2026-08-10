@@ -4,13 +4,14 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { useNavigate, Outlet, useMatch } from "react-router";
-import { useState, useDeferredValue, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { persistor } from "@/redux/store";
 import { Search, ShoppingBag, ShoppingCart, LogOut } from "lucide-react";
 import { removeUser } from "@/redux/slices/user.slice";
 import { clearCart } from "@/redux/slices/cart.slice";
 import { toast } from "react-toastify";
 import { showModal } from "../common/customModal";
+import { useDebounce } from "@/hooks/debounce.hook";
 
 export function DashboardHeader() {
   const user = useAppSelector((state) => state.user);
@@ -18,7 +19,16 @@ export function DashboardHeader() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const val = useDeferredValue(searchTerm);
+  const val = useDebounce({ value: searchTerm, delay: 500 });
+
+  const handleSearch = (term: string) =>
+    navigate(`/dashboard?q=${term}`, { replace: true });
+
+  useEffect(() => {
+    if (val.length >= 1) {
+      handleSearch(val);
+    }
+  }, [val]);
 
   const handleLogout = () => {
     dispatch(removeUser());
@@ -44,15 +54,6 @@ export function DashboardHeader() {
       onConfirmAction: handleLogout,
     });
   };
-
-  const handleSearch = (term: string) =>
-    navigate(`/dashboard?q=${term}`, { replace: true });
-
-  useEffect(() => {
-    if (val.length >= 1) {
-      handleSearch(val);
-    }
-  }, [val]);
 
   const cartCount = cart.products.length;
 

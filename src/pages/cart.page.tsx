@@ -16,6 +16,7 @@ import { changeQty, removeItem } from "@/redux/slices/cart.slice";
 import { useNavigate } from "react-router";
 
 export function CartPage() {
+  console.log("Rendering cart");
   const cart = useAppSelector((state) => state.cart);
   const dispath = useAppDispatch();
   const [pageNo, setPageNo] = useState(1);
@@ -23,18 +24,8 @@ export function CartPage() {
 
   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-  const paginatedProducts = cart.products.slice(
-    (pageNo - 1) * itemsPerPage,
-    pageNo * itemsPerPage,
-  );
-
-  const totalQuantity = cart.products.reduce((acc, item) => acc + item.qty, 0);
-
-  const subtotal = cart.products.reduce(
-    (acc, item) => acc + item.product.price * item.qty,
-    0,
-  );
-
+  // Handle empty list first, and render empty screen
+  // Don't set / update any state variable before it, it causes the ui to re-render and enter infinite loop
   if (cart.products.length === 0) {
     return (
       <div className="mx-auto flex min-h-[60vh] w-full max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
@@ -51,13 +42,29 @@ export function CartPage() {
         </div>
         <Button
           className="rounded-full bg-[#2874f0] px-6 hover:bg-[#1e5fd1]"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(-1)}
         >
           Start Shopping
         </Button>
       </div>
     );
   }
+
+  const paginatedProducts = cart.products.slice(
+    (pageNo - 1) * itemsPerPage,
+    pageNo * itemsPerPage,
+  );
+
+  if (paginatedProducts.length === 0) {
+    setPageNo((curr) => curr - 1);
+  }
+
+  const totalQuantity = cart.products.reduce((acc, item) => acc + item.qty, 0);
+
+  const subtotal = cart.products.reduce(
+    (acc, item) => acc + item.product.price * item.qty,
+    0,
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-10">

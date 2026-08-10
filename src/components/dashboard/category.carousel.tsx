@@ -1,8 +1,7 @@
 import { getCategories } from "@/api/api";
 import type { Category } from "@/types/category.type";
-import { toast } from "react-toastify";
 import { useQuery } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
+import { AxiosError, isAxiosError } from "axios";
 import {
   Carousel,
   CarouselContent,
@@ -11,6 +10,10 @@ import {
   CarouselNext,
 } from "../ui/carousel";
 import { Outlet, useNavigate } from "react-router";
+import { errorToast } from "../common/axiosError.toast";
+import { useRef } from "react";
+import { Badge } from "../ui/badge";
+import { Check } from "lucide-react";
 
 export function CategoryCarousel() {
   const navigate = useNavigate();
@@ -18,13 +21,15 @@ export function CategoryCarousel() {
     queryKey: ["catgories"],
     queryFn: () => getCategories(),
   });
-
+  const selectedCat = useRef("");
   if (isError) {
     if (isAxiosError(error)) {
-      toast(
-        error.response?.data?.message ??
-          error.message ??
-          "Something went wrong",
+      errorToast(
+        new AxiosError(
+          error.response?.data?.message ??
+            error.message ??
+            "Something went wrong",
+        ),
       );
     }
   }
@@ -62,12 +67,18 @@ export function CategoryCarousel() {
                   >
                     <button
                       onClick={() => {
-                        navigate(`/dashboard/${category.slug}`);
+                        if (selectedCat.current === category.slug) {
+                          selectedCat.current = "";
+                          navigate(`/dashboard`);
+                        } else {
+                          selectedCat.current = category.slug;
+                          navigate(`/dashboard/${category.slug}`);
+                        }
                       }}
                       className="group flex w-full flex-col items-center gap-2 rounded-2xl p-2 text-center transition hover:bg-slate-50"
                     >
                       <span
-                        className="flex aspect-square w-full items-center justify-center rounded-2xl text-xl font-bold text-white shadow-sm transition-transform duration-200 group-hover:-translate-y-1 group-hover:shadow-md"
+                        className="relative flex aspect-square w-full items-center justify-center rounded-2xl text-xl font-bold text-white shadow-sm transition-transform duration-200 group-hover:-translate-y-1 group-hover:shadow-md"
                         style={{
                           background: `linear-gradient(135deg, ${
                             [
@@ -82,6 +93,16 @@ export function CategoryCarousel() {
                         }}
                       >
                         {category.name.at(0)?.toUpperCase()}
+
+                        {/* Tick Badge in the bottom right corner */}
+                        {selectedCat.current === category.slug && (
+                          <Badge
+                            className="absolute bottom-0 right-0 translate-x-1 translate-y-1 rounded-full p-1 h-5 w-5 flex items-center justify-center bg-white hover:bg-white text-emerald-600 shadow-md border border-neutral-100"
+                            variant="outline"
+                          >
+                            <Check className="h-3 w-3 stroke-[3]" />
+                          </Badge>
+                        )}
                       </span>
                       <span className="line-clamp-2 text-xs font-medium text-slate-700 capitalize">
                         {category.name}

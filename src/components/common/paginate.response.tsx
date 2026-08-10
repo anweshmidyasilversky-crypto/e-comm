@@ -6,7 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { useNavigate } from "react-router";
 import { Button } from "../ui/button";
 import { ShoppingCart } from "lucide-react";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { addItem } from "@/redux/slices/cart.slice";
 
 type PaginateResponseProps = {
@@ -28,6 +28,7 @@ export function PaginateResponse({
 }: PaginateResponseProps) {
   const navigate = useNavigate();
   const dispath = useAppDispatch();
+  const cart = useAppSelector((state) => state.cart);
   const handleAddToCart = (product: Product, qty: number) => {
     dispath(
       addItem({
@@ -36,6 +37,27 @@ export function PaginateResponse({
       }),
     );
   };
+
+  const isProductInCart = (id: number) => {
+    return cart.products.some((productEntry) => productEntry.product.id === id);
+  };
+
+  if (isFetching) {
+    return (
+      <div className="h-full w-full flex item-center justify-center bg-gray-50/50">
+        <div className="h-30 w-30 aspect-square animate-spin rounded-full border-[6px] border-gray-200 border-t-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (data?.products.length === 0) {
+    return (
+      <div className="w-full h-full flex justify-center">
+        <p> No products Found..... </p>
+      </div>
+    );
+  }
+
   return (
     <div className={`w-full`}>
       {data?.products && data.products.length > 0 && (
@@ -50,6 +72,7 @@ export function PaginateResponse({
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {data.products.map((product) => {
+                const inCart = isProductInCart(product.id);
                 return (
                   <Card
                     key={product.id}
@@ -121,13 +144,13 @@ export function PaginateResponse({
                     </div>
                     <Button
                       disabled={product.stock === 0}
-                      className={`h-12 w-full rounded-xl bg-[#fb641b] text-base font-semibold text-white hover:bg-[#e15615]`}
+                      className={`h-12 w-full rounded-xl ${inCart ? "bg-[#00ff00]" : "bg-[#fb641b]"} text-base font-semibold text-white hover:${inCart ? "bg-[#00ff00]" : "bg-[#e15615]"} `}
                       onClick={() =>
                         handleAddToCart(product, product.minimumOrderQuantity)
                       }
                     >
                       <ShoppingCart className="mr-2 h-5 w-5" />
-                      Add To Cart
+                      {inCart ? "Already in cart" : "Add To Cart"}
                     </Button>
                   </Card>
                 );

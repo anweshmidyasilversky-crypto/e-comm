@@ -27,7 +27,24 @@ export const cartSlice = createSlice({
       );
 
       if (idx > -1) {
-        toast("Product Already exists in cart", { type: "error" });
+        toast(
+          state.products[idx].qty === state.products[idx].product.stock
+            ? "Max items added"
+            : "Incrementing quantity in cart",
+          { type: "info" },
+        );
+        state.products = [
+          ...state.products.slice(0, idx),
+          {
+            product: state.products[idx].product,
+            qty: Math.min(
+              state.products[idx].product.stock,
+              state.products[idx].qty + 1,
+            ),
+          },
+          ...state.products.slice(idx + 1),
+        ];
+        return;
       } else {
         state.products = [
           ...state.products,
