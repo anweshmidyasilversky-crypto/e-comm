@@ -13,7 +13,12 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
 import { toast } from "react-toastify";
 
-export function LoginPage() {
+import { set, ref, getDatabase } from "firebase/database";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { firebaseApp } from "@/firebase/config";
+import type { FirebaseError } from "firebase/app";
+
+export function SignupPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { control, reset, handleSubmit } = useForm<UserSignupPayload>({
@@ -21,16 +26,33 @@ export function LoginPage() {
     resolver: yupResolver(userSignupSchema),
   });
 
+  const db = getDatabase(firebaseApp);
+  const auth = getAuth(firebaseApp);
+
   const user = useAppSelector((state) => state.user);
   if (user.firstName.length > 0) {
     return <Navigate to={{ pathname: "/dashboard" }} />;
   }
 
-  const onsubmit = (data: UserSignupPayload) => {
-    toast(`Login success`, { type: "success" });
-    dispatch(updateUser(data));
-    navigate("/dashboard");
-    reset(userInitialState);
+  const signUp = async (email: string, password: string) => {
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      return res;
+    } catch (err) {
+      toast((err as FirebaseError).message, { type: "error" });
+      throw err;
+    }
+  };
+
+  const onsubmit = async (data: UserSignupPayload) => {
+    try {
+      const signedUpUser = await signUp(data.email, data.password);
+      set(ref(db, `/users/${signedUpUser.user.uid}`), data);
+      toast(`Login success`, { type: "success" });
+      dispatch(updateUser(data));
+      navigate("/dashboard");
+      reset(userInitialState);
+    } catch (err) {}
   };
 
   return (
@@ -197,7 +219,7 @@ export function LoginPage() {
                   type="submit"
                   className="w-full bg-[#fb641b] text-white py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-orange-200 hover:bg-[#e15615] hover:shadow-lg hover:shadow-orange-200 transition duration-150 border-none h-11"
                 >
-                  LOGIN
+                  Sign up
                 </Button>
 
                 <div className="grid grid-cols-2 gap-3">
@@ -209,6 +231,15 @@ export function LoginPage() {
                     onClick={() => reset(userInitialState)}
                   >
                     Reset Form
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 text-xs h-10 w-full py-2.5 text-sm font-medium shadow-sm transition duration-150 h-11"
+                    onClick={() => navigate("/signin")}
+                  >
+                    Have an account
                   </Button>
                 </div>
               </div>

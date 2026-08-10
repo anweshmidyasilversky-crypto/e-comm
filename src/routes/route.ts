@@ -3,15 +3,20 @@ import { DashboardHeader } from "@/components/dashboard/dashboard.header";
 import { PaginatedProducts } from "@/components/dashboard/products.paginated";
 import { AuthGuard } from "@/guards/auth.guard";
 import { CartPage } from "@/pages/cart.page";
-import { LoginPage } from "@/pages/login.page";
+import { SignupPage } from "@/pages/signup.page";
 import { ProductPage } from "@/pages/product.page";
 import { createElement } from "react";
 import { type RouteObject } from "react-router";
+import { SignInPage } from "@/pages/signin.page";
 
 export const routes: RouteObject[] = [
   {
     path: "/",
-    Component: LoginPage,
+    Component: SignupPage,
+  },
+  {
+    path: "/signin",
+    Component: SignInPage,
   },
   {
     element: createElement(AuthGuard),
