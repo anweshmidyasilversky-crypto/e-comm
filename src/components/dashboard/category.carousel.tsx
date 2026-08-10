@@ -9,19 +9,19 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "../ui/carousel";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useNavigate, useParams } from "react-router";
 import { errorToast } from "../common/axiosError.toast";
-import { useRef } from "react";
 import { Badge } from "../ui/badge";
 import { Check } from "lucide-react";
 
 export function CategoryCarousel() {
   const navigate = useNavigate();
+  const params = useParams();
   const { data, isFetching, isError, error } = useQuery({
     queryKey: ["catgories"],
     queryFn: () => getCategories(),
   });
-  const selectedCat = useRef("");
+  const selectedCat = params.id ?? "";
   if (isError) {
     if (isAxiosError(error)) {
       errorToast(
@@ -67,11 +67,9 @@ export function CategoryCarousel() {
                   >
                     <button
                       onClick={() => {
-                        if (selectedCat.current === category.slug) {
-                          selectedCat.current = "";
+                        if (selectedCat === category.slug) {
                           navigate(`/dashboard`);
                         } else {
-                          selectedCat.current = category.slug;
                           navigate(`/dashboard/${category.slug}`);
                         }
                       }}
@@ -95,7 +93,7 @@ export function CategoryCarousel() {
                         {category.name.at(0)?.toUpperCase()}
 
                         {/* Tick Badge in the bottom right corner */}
-                        {selectedCat.current === category.slug && (
+                        {selectedCat === category.slug && (
                           <Badge
                             className="absolute bottom-0 right-0 translate-x-1 translate-y-1 rounded-full p-1 h-5 w-5 flex items-center justify-center bg-white hover:bg-white text-emerald-600 shadow-md border border-neutral-100"
                             variant="outline"

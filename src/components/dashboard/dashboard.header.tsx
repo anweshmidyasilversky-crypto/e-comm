@@ -85,7 +85,10 @@ export function DashboardHeader() {
                 className="h-11 w-full rounded-full border-slate-200 bg-slate-100 pl-10 pr-28 shadow-none transition focus-visible:border-[#2874f0] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#2874f0]/20"
                 type="search"
                 placeholder="Search for products, brands and more"
-                onChange={(event) => setSearchTerm(event.target.value)}
+                onChange={(event) => {
+                  if (event.target.value.trim().length >= 1)
+                    setSearchTerm(event.target.value.trim());
+                }}
               />
               <Button
                 className="absolute top-1/2 right-1.5 h-8 -translate-y-1/2 rounded-full bg-[#2874f0] px-4 text-xs font-semibold hover:bg-[#1e5fd1]"

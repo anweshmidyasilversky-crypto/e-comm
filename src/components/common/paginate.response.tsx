@@ -150,7 +150,11 @@ export function PaginateResponse({
                       }
                     >
                       <ShoppingCart className="mr-2 h-5 w-5" />
-                      {inCart ? "Already in cart" : "Add To Cart"}
+                      {product.stock < product.minimumOrderQuantity
+                        ? "Out of stock"
+                        : inCart
+                          ? "Already in cart"
+                          : "Add To Cart"}
                     </Button>
                   </Card>
                 );
