@@ -75,7 +75,6 @@ export function UserPage() {
     try {
       await verifyBeforeUpdateEmail(auth.currentUser as User, newEmail);
     } catch (err) {
-      toast((err as FirebaseError).message, { type: "error" });
       throw err;
     }
   };
@@ -83,7 +82,6 @@ export function UserPage() {
   const handleEmailUpdate = async () => {
     setIsEmailSubmitting(true);
     try {
-      console.log(newEmail);
       await verifyNewMail(newEmail);
       await updateEmail(auth.currentUser as User, newEmail);
     } catch (err) {
@@ -315,6 +313,8 @@ export function UserPage() {
             onSubmit={handlePasswordUpdate}
             onCancel={() => setPasswordModalOpen(false)}
             isSubmitting={isPasswordSubmitting}
+            setOpenModal={setPasswordModalOpen}
+            setIsSubmitting={setIsPasswordSubmitting}
           />
         </DialogContent>
       </Dialog>

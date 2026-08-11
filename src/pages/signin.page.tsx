@@ -13,8 +13,7 @@ import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
 import { toast } from "react-toastify";
 
 import {
-  onAuthStateChanged,
-  reload,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   type User,
 } from "firebase/auth";
@@ -251,6 +250,15 @@ export function SignInPage() {
                         onClick={() => navigate("/")}
                       >
                         Don't have an account
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-11 w-full rounded-xl border-border text-muted-foreground shadow-sm transition duration-150 hover:bg-muted hover:text-foreground"
+                        onClick={() => navigate("/forgot-password")}
+                      >
+                        Forgot Password
                       </Button>
                     </div>
                   </div>

@@ -18,16 +18,16 @@ import { toast } from "react-toastify";
 type UpdatePasswordFormProps = {
   onSubmit: (data: UpdatePassword) => Promise<void> | void;
   onCancel: () => void;
-  setIsSubmitting?: React.Dispatch<React.SetStateAction<boolean>>;
-  setOpenModal?: React.Dispatch<React.SetStateAction<boolean>>;
-  isSubmitting?: boolean;
+  setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+  isSubmitting: boolean;
 };
 
 export function UpdatePasswordForm({
   onCancel,
   setIsSubmitting,
   setOpenModal,
-  isSubmitting = false,
+  isSubmitting,
 }: UpdatePasswordFormProps) {
   const { handleSubmit, reset, control } = useForm<UpdatePassword>({
     resolver: yupResolver(UpdatePasswordSchema),
@@ -52,11 +52,15 @@ export function UpdatePasswordForm({
   };
 
   const changePassword = async (newPassword: string) => {
+    setIsSubmitting(true);
     try {
       await updatePassword(auth.currentUser as User, newPassword);
+      setOpenModal(false);
     } catch (err) {
       toast((err as FirebaseError).message, { type: "error" });
       throw err;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -75,29 +75,31 @@ export function DashboardHeader() {
           </button>
 
           {/* Search option */}
-          <Field
-            orientation="horizontal"
-            className="flex w-full max-w-2xl flex-1 items-center gap-0"
-          >
-            <div className="relative w-full">
-              <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <Input
-                className="h-11 w-full rounded-full border-slate-200 bg-slate-100 pl-10 pr-28 shadow-none transition focus-visible:border-[#2874f0] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#2874f0]/20"
-                type="search"
-                placeholder="Search for products, brands and more"
-                onChange={(event) => {
-                  if (event.target.value.trim().length >= 1)
-                    setSearchTerm(event.target.value.trim());
-                }}
-              />
-              <Button
-                className="absolute top-1/2 right-1.5 h-8 -translate-y-1/2 rounded-full bg-[#2874f0] px-4 text-xs font-semibold hover:bg-[#1e5fd1]"
-                onClick={() => handleSearch(searchTerm)}
-              >
-                Search
-              </Button>
-            </div>
-          </Field>
+          {!useMatch("/user") && (
+            <Field
+              orientation="horizontal"
+              className="flex w-full max-w-2xl flex-1 items-center gap-0"
+            >
+              <div className="relative w-full">
+                <Search className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  className="h-11 w-full rounded-full border-slate-200 bg-slate-100 pl-10 pr-28 shadow-none transition focus-visible:border-[#2874f0] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#2874f0]/20"
+                  type="search"
+                  placeholder="Search for products, brands and more"
+                  onChange={(event) => {
+                    if (event.target.value.trim().length >= 1)
+                      setSearchTerm(event.target.value.trim());
+                  }}
+                />
+                <Button
+                  className="absolute top-1/2 right-1.5 h-8 -translate-y-1/2 rounded-full bg-[#2874f0] px-4 text-xs font-semibold hover:bg-[#1e5fd1]"
+                  onClick={() => handleSearch(searchTerm)}
+                >
+                  Search
+                </Button>
+              </div>
+            </Field>
+          )}
 
           {/* Cart */}
           {!useMatch("/cart") && (

@@ -10,6 +10,7 @@ import { type RouteObject } from "react-router";
 import { SignInPage } from "@/pages/signin.page";
 import { SignInWithEmail } from "@/pages/signinWithEmail.page";
 import { UserPage } from "@/pages/user.page";
+import { ForgotPassword } from "@/pages/forgotPassword.page";
 
 export const routes: RouteObject[] = [
   {
@@ -23,6 +24,10 @@ export const routes: RouteObject[] = [
   {
     path: "/email-signin",
     Component: SignInWithEmail,
+  },
+  {
+    path: "/forgot-password",
+    Component: ForgotPassword,
   },
   {
     element: createElement(AuthGuard),
@@ -39,6 +44,10 @@ export const routes: RouteObject[] = [
             Component: CartPage,
           },
           {
+            path: "/user",
+            Component: UserPage,
+          },
+          {
             path: "/dashboard",
             Component: CategoryCarousel,
             children: [
@@ -47,10 +56,6 @@ export const routes: RouteObject[] = [
             ],
           },
         ],
-      },
-      {
-        path: "/user",
-        Component: UserPage,
       },
     ],
   },
