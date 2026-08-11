@@ -30,6 +30,7 @@ export const userSignInSchema: yup.ObjectSchema<UserSignInPayload> = yup.object(
 
     password: yup
       .string()
+      .trim()
       .required(emptyMsg("Password"))
       .min(PASSWORD.minLength, minLengthMsg("Password", PASSWORD.minLength))
       .max(PASSWORD.maxLength, maxLengthMsg("Password", PASSWORD.maxLength))

@@ -4,4 +4,5 @@ export interface UserSignupPayload {
   email: string;
   password: string;
   gender: "male" | "female" | "other" | null;
+  isEmailVerified?: boolean;
 }

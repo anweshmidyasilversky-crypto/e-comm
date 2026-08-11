@@ -12,7 +12,12 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { signInWithEmailAndPassword, type User } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  reload,
+  signInWithEmailAndPassword,
+  type User,
+} from "firebase/auth";
 import type { FirebaseError } from "firebase/app";
 import { userSignInSchema } from "@/validation/user.login.schema";
 import { useState } from "react";
@@ -67,6 +72,7 @@ export function SignInPage() {
             password: "",
             gender: null,
             lastName: "",
+            isEmailVerified: signedInUser.emailVerified,
           }),
         );
         navigate("/dashboard");

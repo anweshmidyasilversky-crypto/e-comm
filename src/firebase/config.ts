@@ -4,6 +4,7 @@ import { getAnalytics } from "firebase/analytics";
 import {
   connectAuthEmulator,
   getAuth,
+  onAuthStateChanged,
   type ActionCodeSettings,
 } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -33,4 +34,5 @@ export const auth = getAuth(firebaseApp);
 
 // if (window.location.hostname === "localhost") {
 //   connectAuthEmulator(auth, "http://127.0.0.1:9099");
+
 // }

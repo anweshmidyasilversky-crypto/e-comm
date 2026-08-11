@@ -116,7 +116,10 @@ export function DashboardHeader() {
           )}
 
           {/* Avatar */}
-          <Avatar className="h-9 w-9 shrink-0 border border-slate-200">
+          <Avatar
+            className="h-9 w-9 shrink-0 border border-slate-200"
+            onClick={() => navigate("/user")}
+          >
             <AvatarFallback className="bg-[#2874f0]/10 font-semibold text-[#2874f0]">
               {user.firstName.at(0)?.toUpperCase()}
             </AvatarFallback>

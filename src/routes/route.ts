@@ -9,6 +9,7 @@ import { createElement } from "react";
 import { type RouteObject } from "react-router";
 import { SignInPage } from "@/pages/signin.page";
 import { SignInWithEmail } from "@/pages/signinWithEmail.page";
+import { UserPage } from "@/pages/user.page";
 
 export const routes: RouteObject[] = [
   {
@@ -46,6 +47,10 @@ export const routes: RouteObject[] = [
             ],
           },
         ],
+      },
+      {
+        path: "/user",
+        Component: UserPage,
       },
     ],
   },
