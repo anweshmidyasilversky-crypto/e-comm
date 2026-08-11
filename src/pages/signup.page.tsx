@@ -1,4 +1,4 @@
-import { updateUser, userInitialState } from "@/redux/slices/user.slice";
+import { userInitialState } from "@/redux/slices/user.slice";
 import type { UserSignupPayload } from "@/types/user.signup.payload.type";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,35 +8,48 @@ import { Navigate, useNavigate } from "react-router";
 import { CardContent } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
 import { CustomInput } from "@/components/common/customInput";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useAppSelector } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
 import { toast } from "react-toastify";
 
 import { set, ref, getDatabase } from "firebase/database";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { firebaseApp } from "@/firebase/config";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+  type User,
+} from "firebase/auth";
+import { actionCodeSettings, firebaseApp } from "@/firebase/config";
 import type { FirebaseError } from "firebase/app";
+import { useState } from "react";
+import { auth } from "@/firebase/config";
 
 export function SignupPage() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [signUpClick, toggleSignUpClick] = useState(false);
   const { control, reset, handleSubmit } = useForm<UserSignupPayload>({
     defaultValues: userInitialState,
     resolver: yupResolver(userSignupSchema),
   });
 
   const db = getDatabase(firebaseApp);
-  const auth = getAuth(firebaseApp);
 
   const user = useAppSelector((state) => state.user);
   if (user.firstName.length > 0) {
     return <Navigate to={{ pathname: "/dashboard" }} />;
   }
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    displayName: string,
+  ) => {
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(auth.currentUser as User, {
+        displayName,
+      });
       return res;
     } catch (err) {
       toast((err as FirebaseError).message, { type: "error" });
@@ -44,15 +57,31 @@ export function SignupPage() {
     }
   };
 
-  const onsubmit = async (data: UserSignupPayload) => {
+  const sendMail = async (user: User) => {
     try {
-      const signedUpUser = await signUp(data.email, data.password);
+      await sendEmailVerification(user, actionCodeSettings);
+    } catch (err) {
+      toast((err as FirebaseError).message, { type: "error" });
+    }
+  };
+
+  const onsubmit = async (data: UserSignupPayload) => {
+    toggleSignUpClick(true);
+    try {
+      const signedUpUser = await signUp(
+        data.email,
+        data.password,
+        data.firstName,
+      );
       set(ref(db, `/users/${signedUpUser.user.uid}`), data);
-      toast(`Login success`, { type: "success" });
-      dispatch(updateUser(data));
-      navigate("/dashboard");
-      reset(userInitialState);
-    } catch (err) {}
+
+      await sendMail(signedUpUser.user);
+      toast(`Signup Success, Sent verification mail`, { type: "success" });
+      navigate("/signin");
+    } catch (err) {
+    } finally {
+      toggleSignUpClick(false);
+    }
   };
 
   return (
@@ -216,10 +245,11 @@ export function SignupPage() {
               <div className="flex flex-col gap-3 pt-2">
                 {/* Primary Action: Orange Login Button */}
                 <Button
+                  disabled={signUpClick}
                   type="submit"
                   className="w-full bg-[#fb641b] text-white py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-orange-200 hover:bg-[#e15615] hover:shadow-lg hover:shadow-orange-200 transition duration-150 border-none h-11"
                 >
-                  Sign up
+                  {signUpClick ? "Signing up..." : "Sign up"}
                 </Button>
 
                 <div className="grid grid-cols-2 gap-3">

@@ -12,14 +12,18 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
 import { toast } from "react-toastify";
 
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { firebaseApp } from "@/firebase/config";
+import { signInWithEmailAndPassword, type User } from "firebase/auth";
 import type { FirebaseError } from "firebase/app";
 import { userSignInSchema } from "@/validation/user.login.schema";
+import { useState } from "react";
+
+import { auth } from "@/firebase/config";
+import { UnverifiedLogin } from "@/components/auth/unverified.login";
 
 export function SignInPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [signInClick, toggleSignInClick] = useState(false);
   const { control, reset, handleSubmit } = useForm<UserSignInPayload>({
     defaultValues: {
       email: "",
@@ -28,7 +32,9 @@ export function SignInPage() {
     resolver: yupResolver(userSignInSchema),
   });
 
-  const auth = getAuth(firebaseApp);
+  const [unVerifiedUser, setUnVerifiedUser] = useState<User | undefined>(
+    undefined,
+  );
 
   const user = useAppSelector((state) => state.user);
   if (user.firstName.length > 0) {
@@ -41,192 +47,213 @@ export function SignInPage() {
       return res;
     } catch (err) {
       toast((err as FirebaseError).message, { type: "error" });
+      console.dir(err, (err as FirebaseError).message);
       throw err;
     }
   };
 
   const onsubmit = async (data: UserSignInPayload) => {
+    toggleSignInClick(true);
     try {
       const signedInUser = (await signIn(data.email, data.password)).user;
-      toast(`Login success`, { type: "success" });
-      dispatch(
-        updateUser({
-          firstName: signedInUser.displayName ?? "Display",
-          email: signedInUser.email ?? "",
+      if (!signedInUser.emailVerified) {
+        setUnVerifiedUser(signedInUser);
+      } else {
+        toast(`Login success`, { type: "success" });
+        dispatch(
+          updateUser({
+            firstName: signedInUser.displayName ?? "Display",
+            email: signedInUser.email ?? "",
+            password: "",
+            gender: null,
+            lastName: "",
+          }),
+        );
+        navigate("/dashboard");
+        reset({
+          email: "",
           password: "",
-          gender: null,
-          lastName: "",
-        }),
-      );
-      navigate("/dashboard");
-      reset({
-        email: "",
-        password: "",
-      });
-    } catch (err) {}
+        });
+      }
+    } catch (err) {
+    } finally {
+      toggleSignInClick(false);
+    }
   };
 
   return (
-    <div className="min-h-screen w-full font-sans flex items-center justify-center bg-slate-100 p-4 sm:p-6">
-      <div className="grid w-full max-w-5xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-slate-300/50 md:grid-cols-5">
-        {/* Brand / Marketing Panel */}
-        <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-[#2874f0] via-[#3d6ff0] to-[#5b3df0] p-10 text-white md:col-span-2 md:flex">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/10 blur-2xl"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-[#fb641b]/30 blur-3xl"
-          />
+    <>
+      {unVerifiedUser ? (
+        <UnverifiedLogin user={unVerifiedUser} />
+      ) : (
+        <main className="min-h-screen w-full font-sans flex items-center justify-center bg-[radial-gradient(circle_at_top_left,var(--background),var(--muted))] px-4 py-8 sm:px-6">
+          <section className="grid w-full max-w-5xl overflow-hidden rounded-[calc(var(--radius)*1.6)] border border-border/60 bg-card shadow-2xl shadow-muted/50 md:grid-cols-5">
+            {/* Brand / Marketing Panel */}
+            <aside className="relative hidden flex-col justify-between overflow-hidden bg-[linear-gradient(135deg,var(--brand-blue),var(--brand-blue-dark),var(--primary))] p-10 text-white md:col-span-2 md:flex">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -top-16 -right-16 h-64 w-64 rounded-full bg-white/10 blur-2xl"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-[var(--brand-orange)]/30 blur-3xl"
+              />
 
-          <div className="relative z-10 flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-              <ShoppingBag className="h-5 w-5" />
-            </span>
-            <span className="text-lg font-bold tracking-tight">Shoply</span>
-          </div>
-
-          <div className="relative z-10 space-y-6">
-            <h2 className="text-3xl font-bold leading-tight text-balance">
-              Everything you love, all in one cart.
-            </h2>
-            <p className="text-sm leading-relaxed text-white/80">
-              Join thousands of shoppers discovering great deals across fashion,
-              electronics, home &amp; more.
-            </p>
-
-            <ul className="space-y-4 pt-2">
-              <li className="flex items-center gap-3 text-sm">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
-                  <Truck className="h-4.5 w-4.5" />
+              <div className="relative z-10 flex items-center gap-2">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
+                  <ShoppingBag className="h-5 w-5" />
                 </span>
-                Fast, free delivery on eligible orders
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
-                  <BadgePercent className="h-4.5 w-4.5" />
-                </span>
-                Exclusive member-only deals every day
-              </li>
-              <li className="flex items-center gap-3 text-sm">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
-                  <ShieldCheck className="h-4.5 w-4.5" />
-                </span>
-                Secure checkout, every single time
-              </li>
-            </ul>
-          </div>
-
-          <p className="relative z-10 text-xs text-white/60">
-            © {new Date().getFullYear()} Shoply. All rights reserved.
-          </p>
-        </div>
-
-        {/* Form Panel */}
-        <div className="flex flex-col justify-center bg-white p-8 sm:p-12 md:col-span-3">
-          <div className="mb-6 flex items-center gap-2 md:hidden">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#2874f0] text-white">
-              <ShoppingBag className="h-4 w-4" />
-            </span>
-            <span className="text-base font-bold tracking-tight text-slate-900">
-              Shoply
-            </span>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">
-              Enter your credentials
-            </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Please fill in your details to continue.
-            </p>
-          </div>
-
-          <CardContent className="p-0">
-            <form onSubmit={handleSubmit(onsubmit)} className="space-y-5">
-              <FieldGroup className="space-y-4">
-                {/* Email Field */}
-                <Field>
-                  <CustomInput
-                    name="email"
-                    control={control}
-                    fieldName="Email"
-                    inptType="email"
-                    placeholder="you@example.com"
-                    className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
-                  />
-                  <FieldDescription className="text-[11px] text-gray-400 mt-1">
-                    We'll use this to contact you. We won't share your email.
-                  </FieldDescription>
-                </Field>
-
-                {/* Password Field */}
-                <Field>
-                  <CustomInput
-                    control={control}
-                    name="password"
-                    fieldName="Password"
-                    inptType="password"
-                    placeholder="Enter your password"
-                    className="border-gray-300 focus:border-[#2874f0] rounded-xl h-11"
-                  />
-                </Field>
-              </FieldGroup>
-
-              {/* Terms and Privacy Text */}
-              <p className="text-[11px] text-gray-500 leading-normal pt-2">
-                By continuing, you agree to the
-                <a href="#" className="text-[#2874f0] mx-1 hover:underline">
-                  Terms of Use
-                </a>{" "}
-                and
-                <a href="#" className="text-[#2874f0] hover:underline">
-                  Privacy Policy
-                </a>
-                .
-              </p>
-
-              {/* Action Buttons Panel */}
-              <div className="flex flex-col gap-3 pt-2">
-                {/* Primary Action: Orange Login Button */}
-                <Button
-                  type="submit"
-                  className="w-full bg-[#fb641b] text-white py-2.5 rounded-xl text-sm font-semibold shadow-md shadow-orange-200 hover:bg-[#e15615] hover:shadow-lg hover:shadow-orange-200 transition duration-150 border-none h-11"
-                >
-                  Sign in
-                </Button>
-
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Reset Button */}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 text-xs h-10 w-full py-2.5 text-sm font-medium shadow-sm transition duration-150 h-11"
-                    onClick={() =>
-                      reset({
-                        email: "",
-                        password: "",
-                      })
-                    }
-                  >
-                    Reset Form
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full border-gray-300 text-gray-600 rounded-xl hover:bg-gray-50 text-xs h-10 w-full py-2.5 text-sm font-medium shadow-sm transition duration-150 h-11"
-                    onClick={() => navigate("/")}
-                  >
-                    Don't have an account
-                  </Button>
-                </div>
+                <span className="text-lg font-bold tracking-tight">Shoply</span>
               </div>
-            </form>
-          </CardContent>
-        </div>
-      </div>
-    </div>
+
+              <div className="relative z-10 space-y-6">
+                <h2 className="text-3xl font-bold leading-tight text-balance">
+                  Everything you love, all in one cart.
+                </h2>
+                <p className="text-sm leading-relaxed text-white/80">
+                  Join thousands of shoppers discovering great deals across
+                  fashion, electronics, home &amp; more.
+                </p>
+
+                <ul className="space-y-4 pt-2">
+                  <li className="flex items-center gap-3 text-sm">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+                      <Truck className="h-4.5 w-4.5" />
+                    </span>
+                    Fast, free delivery on eligible orders
+                  </li>
+                  <li className="flex items-center gap-3 text-sm">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+                      <BadgePercent className="h-4.5 w-4.5" />
+                    </span>
+                    Exclusive member-only deals every day
+                  </li>
+                  <li className="flex items-center gap-3 text-sm">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15">
+                      <ShieldCheck className="h-4.5 w-4.5" />
+                    </span>
+                    Secure checkout, every single time
+                  </li>
+                </ul>
+              </div>
+
+              <p className="relative z-10 text-xs text-white/60">
+                © {new Date().getFullYear()} Shoply. All rights reserved.
+              </p>
+            </aside>
+
+            {/* Form Panel */}
+            <section className="flex flex-col justify-center bg-card p-8 sm:p-12 md:col-span-3">
+              <div className="mb-6 flex items-center gap-2 md:hidden">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-blue)] text-white">
+                  <ShoppingBag className="h-4 w-4" />
+                </span>
+                <span className="text-base font-bold tracking-tight text-foreground">
+                  Shoply
+                </span>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-foreground">
+                  Enter your credentials
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Please fill in your details to continue.
+                </p>
+              </div>
+
+              <CardContent className="p-0">
+                <form onSubmit={handleSubmit(onsubmit)} className="space-y-5">
+                  <FieldGroup className="space-y-4">
+                    {/* Email Field */}
+                    <Field>
+                      <CustomInput
+                        name="email"
+                        control={control}
+                        fieldName="Email"
+                        inptType="email"
+                        placeholder="you@example.com"
+                        className="h-11 rounded-xl border-input bg-background focus:border-[var(--brand-blue)]"
+                      />
+                      <FieldDescription className="mt-1 text-[11px] text-muted-foreground">
+                        We'll use this to contact you. We won't share your
+                        email.
+                      </FieldDescription>
+                    </Field>
+
+                    {/* Password Field */}
+                    <Field>
+                      <CustomInput
+                        control={control}
+                        name="password"
+                        fieldName="Password"
+                        inptType="password"
+                        placeholder="Enter your password"
+                        className="h-11 rounded-xl border-input bg-background focus:border-[var(--brand-blue)]"
+                      />
+                    </Field>
+                  </FieldGroup>
+
+                  {/* Terms and Privacy Text */}
+                  <p className="pt-2 text-[11px] leading-normal text-muted-foreground">
+                    By continuing, you agree to the
+                    <a
+                      href="#"
+                      className="mx-1 text-[var(--brand-blue)] hover:underline"
+                    >
+                      Terms of Use
+                    </a>{" "}
+                    and
+                    <a
+                      href="#"
+                      className="text-[var(--brand-blue)] hover:underline"
+                    >
+                      Privacy Policy
+                    </a>
+                    .
+                  </p>
+
+                  {/* Action Buttons Panel */}
+                  <div className="flex flex-col gap-3 pt-2">
+                    <Button
+                      disabled={signInClick}
+                      type="submit"
+                      className="h-11 w-full rounded-xl border-none bg-[var(--brand-orange)] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-[var(--brand-orange)]/20 transition duration-150 hover:bg-[var(--brand-orange-dark)] hover:shadow-lg hover:shadow-[var(--brand-orange)]/30"
+                    >
+                      {signInClick ? "Signing in..." : "Sign in"}
+                    </Button>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-11 w-full rounded-xl border-border text-muted-foreground shadow-sm transition duration-150 hover:bg-muted hover:text-foreground"
+                        onClick={() =>
+                          reset({
+                            email: "",
+                            password: "",
+                          })
+                        }
+                      >
+                        Reset Form
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-11 w-full rounded-xl border-border text-muted-foreground shadow-sm transition duration-150 hover:bg-muted hover:text-foreground"
+                        onClick={() => navigate("/")}
+                      >
+                        Don't have an account
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </section>
+          </section>
+        </main>
+      )}
+    </>
   );
 }

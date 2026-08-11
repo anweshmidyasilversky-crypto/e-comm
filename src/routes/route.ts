@@ -8,6 +8,7 @@ import { ProductPage } from "@/pages/product.page";
 import { createElement } from "react";
 import { type RouteObject } from "react-router";
 import { SignInPage } from "@/pages/signin.page";
+import { SignInWithEmail } from "@/pages/signinWithEmail.page";
 
 export const routes: RouteObject[] = [
   {
@@ -17,6 +18,10 @@ export const routes: RouteObject[] = [
   {
     path: "/signin",
     Component: SignInPage,
+  },
+  {
+    path: "/email-signin",
+    Component: SignInWithEmail,
   },
   {
     element: createElement(AuthGuard),

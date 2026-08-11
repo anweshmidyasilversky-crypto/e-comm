@@ -1,6 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import {
+  connectAuthEmulator,
+  getAuth,
+  type ActionCodeSettings,
+} from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -16,6 +21,16 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
+export const actionCodeSettings: ActionCodeSettings = {
+  url: "http://localhost:5173/signin",
+  handleCodeInApp: true,
+};
+
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);
 export const analytics = getAnalytics(firebaseApp);
+export const auth = getAuth(firebaseApp);
+
+// if (window.location.hostname === "localhost") {
+//   connectAuthEmulator(auth, "http://127.0.0.1:9099");
+// }
