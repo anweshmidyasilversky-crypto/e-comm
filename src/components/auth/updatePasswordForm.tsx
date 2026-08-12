@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { CustomInput } from "../common/customInput";
 import { toast } from "react-toastify";
-import { changePassword, checkPassword } from "@/lib/firebaseAuth";
+import { changePassword, reAuthenticate } from "@/lib/firebaseAuth";
 import { showFirebaseError } from "@/lib/firebase.errors";
 
 type UpdatePasswordFormProps = {
@@ -34,7 +34,7 @@ export function UpdatePasswordForm({
   const handleFormSubmit = async (data: UpdatePassword) => {
     setIsSubmitting(true);
     try {
-      await checkPassword(data.currPassword);
+      await reAuthenticate(data.currPassword);
 
       await changePassword(data.newPassword);
       setOpenModal(false);

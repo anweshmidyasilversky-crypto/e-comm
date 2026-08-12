@@ -13,7 +13,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { UpdatePasswordForm } from "@/components/auth/updatePasswordForm";
-import { User as UserIcon, Mail, Lock } from "lucide-react";
+import { DeleteUser } from "@/components/auth/user.delete";
+import { User as UserIcon, Mail, Lock, Trash2 } from "lucide-react";
 import { onAuthStateChanged, reload } from "firebase/auth";
 import { auth } from "@/lib/firebaseConfig";
 import { toast } from "react-toastify";
@@ -34,6 +35,7 @@ export function UserPage() {
 
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
   const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
 
@@ -96,7 +98,7 @@ export function UserPage() {
           {/* ── Profile card ── */}
           <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
             {/* Banner */}
-            <div className="h-24 bg-gradient-to-r from-brand-blue via-brand-blue-dark to-primary" />
+            <div className="h-24 bg-linear-to-r from-brand-blue via-brand-blue-dark to-primary" />
 
             <div className="px-6 pb-6 sm:px-8 sm:pb-8">
               {/* Avatar + status */}
@@ -191,6 +193,14 @@ export function UserPage() {
                 >
                   <Lock className="h-4 w-4 text-brand-orange" />
                   <span>Update Password</span>
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="h-11 w-full justify-start gap-3 rounded-lg hover:bg-red-100"
+                  onClick={() => setDeleteModalOpen(true)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                  <span>Delete Account</span>
                 </Button>
               </div>
             </div>
@@ -294,6 +304,19 @@ export function UserPage() {
             setOpenModal={setPasswordModalOpen}
             setIsSubmitting={setIsPasswordSubmitting}
           />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Account</DialogTitle>
+            <DialogDescription>
+              This action is permanent. Enter your password to confirm account
+              deletion.
+            </DialogDescription>
+          </DialogHeader>
+          <DeleteUser setOpenModal={setDeleteModalOpen} />
         </DialogContent>
       </Dialog>
     </>

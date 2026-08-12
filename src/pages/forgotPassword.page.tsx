@@ -37,7 +37,7 @@ export function ForgotPassword() {
           />
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-[var(--brand-orange)]/30 blur-3xl"
+            className="pointer-events-none absolute -bottom-24 -left-10 h-72 w-72 rounded-full bg-(--brand-orange)/30 blur-3xl"
           />
 
           <div className="relative z-10 flex items-center gap-2">
@@ -85,7 +85,7 @@ export function ForgotPassword() {
 
         <section className="flex flex-col justify-center bg-card p-8 sm:p-12 md:col-span-3">
           <div className="mb-6 flex items-center gap-2 md:hidden">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--brand-blue)] text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-blue text-white">
               <ShoppingBag className="h-4 w-4" />
             </span>
             <span className="text-base font-bold tracking-tight text-foreground">
@@ -94,7 +94,7 @@ export function ForgotPassword() {
           </div>
 
           <div className="mb-8">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-orange)]/10 text-[var(--brand-orange)]">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-orange/10 text-brand-orange">
               <Mail className="h-7 w-7" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">
@@ -127,7 +127,7 @@ export function ForgotPassword() {
             <Button
               type="button"
               onClick={() => handleForgotPassword(email)}
-              className="h-11 w-full rounded-xl border-none bg-[var(--brand-orange)] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-[var(--brand-orange)]/20 transition duration-150 hover:bg-[var(--brand-orange-dark)] hover:shadow-lg hover:shadow-[var(--brand-orange)]/30"
+              className="h-11 w-full rounded-xl border-none bg-brand-orange px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-(--brand-orange)/20 transition duration-150 hover:bg-brand-orange-dark hover:shadow-lg hover:shadow-(--brand-orange)/30"
             >
               Send reset link
             </Button>

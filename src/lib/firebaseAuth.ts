@@ -1,5 +1,6 @@
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   EmailAuthProvider,
   reauthenticateWithCredential,
   sendEmailVerification,
@@ -82,7 +83,7 @@ export const changeEmail = async (newEmail: string): Promise<void> => {
   }
 };
 
-export const checkPassword = async (oldPassword: string): Promise<void> => {
+export const reAuthenticate = async (oldPassword: string): Promise<void> => {
   try {
     const credential = EmailAuthProvider.credential(
       auth.currentUser?.email ?? "",
@@ -106,6 +107,15 @@ export const changePassword = async (newPassword: string): Promise<void> => {
 export const passwordResetMail = async (email: string): Promise<void> => {
   try {
     await sendPasswordResetEmail(auth, email);
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const userDelete = async (password: string) => {
+  try {
+    await reAuthenticate(password);
+    await deleteUser(auth.currentUser as User);
   } catch (err) {
     throw err;
   }

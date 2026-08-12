@@ -4,10 +4,8 @@ import { getAnalytics } from "firebase/analytics";
 import {
   connectAuthEmulator,
   getAuth,
-  onAuthStateChanged,
   type ActionCodeSettings,
 } from "firebase/auth";
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_API_KEY,
