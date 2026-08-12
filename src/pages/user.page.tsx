@@ -13,7 +13,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { UpdatePasswordForm } from "@/components/auth/updatePasswordForm";
-import type { UpdatePassword } from "@/types/update.password.type";
 import { User as UserIcon, Mail, Lock } from "lucide-react";
 import {
   onAuthStateChanged,
@@ -38,7 +37,6 @@ export function UserPage() {
     try {
       await reload(currUser);
       if (currUser.emailVerified) {
-        console.log(currUser.emailVerified, user.isEmailVerified);
         dispatch(
           updateUser({
             isEmailVerified: currUser.emailVerified || user.isEmailVerified,
@@ -85,19 +83,27 @@ export function UserPage() {
       await verifyNewMail(newEmail);
       await updateEmail(auth.currentUser as User, newEmail);
     } catch (err) {
-      toast((err as FirebaseError).message, { type: "error" });
+      if (err instanceof FirebaseError) {
+        switch (err.code) {
+          case "auth/requires-recent-login":
+            toast("Please logout and login again for this operation", {
+              type: "info",
+            });
+            break;
+
+          case "auth/operation-not-allowed":
+            toast("Please verify the new mail using the link sent to it", {
+              type: "info",
+            });
+            break;
+
+          default:
+            toast(err.message, { type: "error" });
+        }
+      }
+      console.log((err as FirebaseError).code);
     } finally {
       setIsEmailSubmitting(false);
-    }
-  };
-
-  const handlePasswordUpdate = async (data: UpdatePassword) => {
-    setIsPasswordSubmitting(true);
-    try {
-      console.log("Password update:", data);
-      setPasswordModalOpen(false);
-    } finally {
-      setIsPasswordSubmitting(false);
     }
   };
 
@@ -310,7 +316,6 @@ export function UserPage() {
             </DialogDescription>
           </DialogHeader>
           <UpdatePasswordForm
-            onSubmit={handlePasswordUpdate}
             onCancel={() => setPasswordModalOpen(false)}
             isSubmitting={isPasswordSubmitting}
             setOpenModal={setPasswordModalOpen}

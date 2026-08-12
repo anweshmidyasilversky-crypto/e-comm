@@ -29,7 +29,7 @@ export const actionCodeSettings: ActionCodeSettings = {
 
 // Initialize Firebase
 export const firebaseApp = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(firebaseApp);
+// export const analytics = getAnalytics(firebaseApp);
 export const auth = getAuth(firebaseApp);
 
 // if (window.location.hostname === "localhost") {

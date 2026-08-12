@@ -16,7 +16,6 @@ import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
 
 type UpdatePasswordFormProps = {
-  onSubmit: (data: UpdatePassword) => Promise<void> | void;
   onCancel: () => void;
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -68,6 +67,7 @@ export function UpdatePasswordForm({
     try {
       await checkPassword(data.currPassword);
       await changePassword(data.newPassword);
+      toast("Password change successfull", { type: "success" });
     } catch (err) {}
   };
 
