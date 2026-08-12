@@ -12,17 +12,13 @@ import { Button } from "@/components/ui/button";
 import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
 import { toast } from "react-toastify";
 
-import {
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  type User,
-} from "firebase/auth";
-import type { FirebaseError } from "firebase/app";
+import { type User } from "firebase/auth";
 import { userSignInSchema } from "@/validation/user.login.schema";
 import { useState } from "react";
 
-import { auth } from "@/firebase/config";
 import { UnverifiedLogin } from "@/components/auth/unverified.login";
+import { signIn } from "@/lib/firebaseAuth";
+import { showFirebaseError } from "@/lib/firebase.errors";
 
 export function SignInPage() {
   const dispatch = useAppDispatch();
@@ -44,17 +40,6 @@ export function SignInPage() {
   if (user.firstName.length > 0) {
     return <Navigate to={{ pathname: "/dashboard" }} />;
   }
-
-  const signIn = async (email: string, password: string) => {
-    try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      return res;
-    } catch (err) {
-      toast((err as FirebaseError).message, { type: "error" });
-      console.dir(err, (err as FirebaseError).message);
-      throw err;
-    }
-  };
 
   const onsubmit = async (data: UserSignInPayload) => {
     toggleSignInClick(true);
@@ -81,6 +66,7 @@ export function SignInPage() {
         });
       }
     } catch (err) {
+      showFirebaseError(err);
     } finally {
       toggleSignInClick(false);
     }

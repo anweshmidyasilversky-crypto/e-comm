@@ -14,21 +14,32 @@ import {
 } from "@/components/ui/dialog";
 import { UpdatePasswordForm } from "@/components/auth/updatePasswordForm";
 import { User as UserIcon, Mail, Lock } from "lucide-react";
-import {
-  onAuthStateChanged,
-  reload,
-  sendEmailVerification,
-  updateEmail,
-  verifyBeforeUpdateEmail,
-  type User,
-} from "firebase/auth";
-import { actionCodeSettings, auth } from "@/firebase/config";
+import { onAuthStateChanged, reload } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
 import { toast } from "react-toastify";
 import { FirebaseError } from "firebase/app";
 import { updateUser } from "@/redux/slices/user.slice";
+import {
+  changeEmail,
+  sendVerificationLink,
+  verifyNewMail,
+} from "@/lib/firebaseAuth";
+import { showFirebaseError } from "@/lib/firebase.errors";
 
 export function UserPage() {
   const user = useAppSelector((state) => state.user);
+
+  const isEmailVerified = Boolean(user.isEmailVerified);
+  const dispatch = useAppDispatch();
+
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
+  const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
+
+  // ── email form state ──
+  const [newEmail, setNewEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   onAuthStateChanged(auth, async (currUser) => {
     if (!currUser) {
@@ -48,60 +59,22 @@ export function UserPage() {
     }
   });
 
-  const isEmailVerified = Boolean(user.isEmailVerified);
-  const dispatch = useAppDispatch();
-
-  const [emailModalOpen, setEmailModalOpen] = useState(false);
-  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
-  const [isEmailSubmitting, setIsEmailSubmitting] = useState(false);
-  const [isPasswordSubmitting, setIsPasswordSubmitting] = useState(false);
-
-  // ── email form state ──
-  const [newEmail, setNewEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
-
-  const sendVerificationLink = async () => {
-    try {
-      await sendEmailVerification(auth.currentUser as User, actionCodeSettings);
-      toast("Sent verification mail");
-    } catch (err) {
-      toast((err as FirebaseError).message);
-    }
-  };
-
-  const verifyNewMail = async (newEmail: string) => {
-    try {
-      await verifyBeforeUpdateEmail(auth.currentUser as User, newEmail);
-    } catch (err) {
-      throw err;
-    }
-  };
-
   const handleEmailUpdate = async () => {
     setIsEmailSubmitting(true);
     try {
-      await verifyNewMail(newEmail);
-      await updateEmail(auth.currentUser as User, newEmail);
+      await changeEmail(newEmail);
+      toast("Updated email successfully", { type: "success" });
     } catch (err) {
       if (err instanceof FirebaseError) {
-        switch (err.code) {
-          case "auth/requires-recent-login":
-            toast("Please logout and login again for this operation", {
-              type: "info",
-            });
-            break;
-
-          case "auth/operation-not-allowed":
-            toast("Please verify the new mail using the link sent to it", {
-              type: "info",
-            });
-            break;
-
-          default:
-            toast(err.message, { type: "error" });
+        if (err.code === "auth/operation-not-allowed") {
+          await verifyNewMail(newEmail);
+          toast(" Please verify the new email, using the link sent to it ", {
+            type: "info",
+          });
+        } else {
+          showFirebaseError(err);
         }
       }
-      console.log((err as FirebaseError).code);
     } finally {
       setIsEmailSubmitting(false);
     }

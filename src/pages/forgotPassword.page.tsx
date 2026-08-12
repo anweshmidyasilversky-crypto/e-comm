@@ -1,6 +1,3 @@
-import { auth } from "@/firebase/config";
-import type { FirebaseError } from "firebase/app";
-import { sendPasswordResetEmail } from "firebase/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
@@ -13,6 +10,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { passwordResetMail } from "@/lib/firebaseAuth";
+import { showFirebaseError } from "@/lib/firebase.errors";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -20,11 +19,11 @@ export function ForgotPassword() {
 
   const handleForgotPassword = async (email: string) => {
     try {
-      await sendPasswordResetEmail(auth, email);
+      await passwordResetMail(email);
       toast("Sent password reset link", { type: "success" });
       navigate("/signin");
     } catch (err) {
-      toast((err as FirebaseError).message);
+      showFirebaseError(err);
     }
   };
 

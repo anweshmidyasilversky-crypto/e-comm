@@ -12,6 +12,9 @@ import { clearCart } from "@/redux/slices/cart.slice";
 import { toast } from "react-toastify";
 import { showModal } from "../common/customModal";
 import { useDebounce } from "@/hooks/debounce.hook";
+import { signOut } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
+import { FirebaseError } from "firebase/app";
 
 export function DashboardHeader() {
   const user = useAppSelector((state) => state.user);
@@ -30,15 +33,39 @@ export function DashboardHeader() {
     }
   }, [val]);
 
-  const handleLogout = () => {
-    dispatch(removeUser());
-    dispatch(clearCart());
-    persistor.purge();
-    toast.success("Logout Success", {
-      onOpen: () => {
-        navigate("/");
-      },
-    });
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      dispatch(removeUser());
+      dispatch(clearCart());
+      await persistor.purge();
+      toast.success("Logout Success", {
+        onOpen: () => {
+          navigate("/");
+        },
+      });
+    } catch (err) {
+      if (err instanceof FirebaseError) {
+        switch (err.code) {
+          case "auth/network-request-failed":
+            toast("Network error", { type: "error" });
+            break;
+
+          case "auth/internal-error":
+            toast("Something went wrong", { type: "error" });
+            break;
+
+          case "auth/app-not-authorized":
+            toast("Unauthorized app", { type: "error" });
+            break;
+
+          default:
+            toast(err.message, { type: "error" });
+        }
+      } else {
+        toast("Something went wrong", { type: "error" });
+      }
+    }
   };
 
   const showLogoutModal = () => {

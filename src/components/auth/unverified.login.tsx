@@ -1,7 +1,7 @@
 import { sendEmailVerification, type User } from "firebase/auth";
 import { Mail } from "lucide-react";
 import { Button } from "../ui/button";
-import { actionCodeSettings } from "@/firebase/config";
+import { actionCodeSettings } from "@/lib/firebaseConfig";
 import { toast } from "react-toastify";
 import type { FirebaseError } from "firebase/app";
 

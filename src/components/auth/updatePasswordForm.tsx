@@ -5,15 +5,9 @@ import type { UpdatePassword } from "@/types/update.password.type";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
 import { CustomInput } from "../common/customInput";
-import {
-  EmailAuthProvider,
-  reauthenticateWithCredential,
-  updatePassword,
-  type User,
-} from "firebase/auth";
-import { auth } from "@/firebase/config";
-import { FirebaseError } from "firebase/app";
 import { toast } from "react-toastify";
+import { changePassword, checkPassword } from "@/lib/firebaseAuth";
+import { showFirebaseError } from "@/lib/firebase.errors";
 
 type UpdatePasswordFormProps = {
   onCancel: () => void;
@@ -37,38 +31,19 @@ export function UpdatePasswordForm({
     },
   });
 
-  const checkPassword = async (oldPassword: string) => {
-    try {
-      const credential = EmailAuthProvider.credential(
-        auth.currentUser?.email ?? "",
-        oldPassword,
-      );
-      await reauthenticateWithCredential(auth.currentUser as User, credential);
-    } catch (err) {
-      toast((err as FirebaseError).message, { type: "error" });
-      throw err;
-    }
-  };
-
-  const changePassword = async (newPassword: string) => {
+  const handleFormSubmit = async (data: UpdatePassword) => {
     setIsSubmitting(true);
     try {
-      await updatePassword(auth.currentUser as User, newPassword);
+      await checkPassword(data.currPassword);
+
+      await changePassword(data.newPassword);
       setOpenModal(false);
+      toast("Password change successfull", { type: "success" });
     } catch (err) {
-      toast((err as FirebaseError).message, { type: "error" });
-      throw err;
+      showFirebaseError(err);
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleFormSubmit = async (data: UpdatePassword) => {
-    try {
-      await checkPassword(data.currPassword);
-      await changePassword(data.newPassword);
-      toast("Password change successfull", { type: "success" });
-    } catch (err) {}
   };
 
   return (

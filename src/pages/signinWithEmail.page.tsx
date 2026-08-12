@@ -11,9 +11,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { actionCodeSettings, firebaseApp } from "@/firebase/config";
+import { actionCodeSettings, firebaseApp } from "@/lib/firebaseConfig";
 
-import { auth } from "@/firebase/config";
+import { auth } from "@/lib/firebaseConfig";
 
 export function SignInWithEmail() {
   const [email, setEmail] = useState("");

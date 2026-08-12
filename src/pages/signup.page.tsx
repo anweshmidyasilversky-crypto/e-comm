@@ -12,18 +12,9 @@ import { useAppSelector } from "@/redux/store";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, Truck, ShieldCheck, BadgePercent } from "lucide-react";
 import { toast } from "react-toastify";
-
-import { set, ref, getDatabase } from "firebase/database";
-import {
-  createUserWithEmailAndPassword,
-  sendEmailVerification,
-  updateProfile,
-  type User,
-} from "firebase/auth";
-import { actionCodeSettings, firebaseApp } from "@/firebase/config";
-import type { FirebaseError } from "firebase/app";
 import { useState } from "react";
-import { auth } from "@/firebase/config";
+import { saveUserToDb, sendVerificationLink, signUp } from "@/lib/firebaseAuth";
+import { showFirebaseError } from "@/lib/firebase.errors";
 
 export function SignupPage() {
   const navigate = useNavigate();
@@ -33,52 +24,21 @@ export function SignupPage() {
     resolver: yupResolver(userSignupSchema),
   });
 
-  const db = getDatabase(firebaseApp);
-
   const user = useAppSelector((state) => state.user);
   if (user.firstName.length > 0) {
     return <Navigate to={{ pathname: "/dashboard" }} />;
   }
 
-  const signUp = async (
-    email: string,
-    password: string,
-    displayName: string,
-  ) => {
-    try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(auth.currentUser as User, {
-        displayName,
-      });
-      return res;
-    } catch (err) {
-      toast((err as FirebaseError).message, { type: "error" });
-      throw err;
-    }
-  };
-
-  const sendMail = async (user: User) => {
-    try {
-      await sendEmailVerification(user, actionCodeSettings);
-    } catch (err) {
-      toast((err as FirebaseError).message, { type: "error" });
-    }
-  };
-
   const onsubmit = async (data: UserSignupPayload) => {
     toggleSignUpClick(true);
     try {
-      const signedUpUser = await signUp(
-        data.email,
-        data.password,
-        data.firstName,
-      );
-      set(ref(db, `/users/${signedUpUser.user.uid}`), data);
-
-      await sendMail(signedUpUser.user);
+      const userCredential = await signUp(data);
+      await saveUserToDb(userCredential.user.uid, data);
+      await sendVerificationLink();
       toast(`Signup Success, Sent verification mail`, { type: "success" });
       navigate("/signin");
     } catch (err) {
+      showFirebaseError(err);
     } finally {
       toggleSignUpClick(false);
     }
