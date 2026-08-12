@@ -112,7 +112,7 @@ export const passwordResetMail = async (email: string): Promise<void> => {
   }
 };
 
-export const userDelete = async (password: string) => {
+export const userDelete = async (password: string): Promise<void> => {
   try {
     await reAuthenticate(password);
     await deleteUser(auth.currentUser as User);

@@ -25,44 +25,41 @@ export const valdiatePassword = (password: string) => {
   return true;
 };
 
-export const userSignupSchema: yup.ObjectSchema<UserSignupPayload> = yup.object(
-  {
-    firstName: yup
-      .string()
-      .trim()
-      .required(emptyMsg("First name"))
-      .min(
-        FIRST_NAME.minLength,
-        minLengthMsg("First name", FIRST_NAME.minLength),
-      )
-      .max(
-        FIRST_NAME.maxLength,
-        maxLengthMsg("First name", FIRST_NAME.maxLength),
-      ),
+export const userSignupSchema: yup.ObjectSchema<
+  Omit<UserSignupPayload, "isEmailVerified">
+> = yup.object({
+  firstName: yup
+    .string()
+    .trim()
+    .required(emptyMsg("First name"))
+    .min(FIRST_NAME.minLength, minLengthMsg("First name", FIRST_NAME.minLength))
+    .max(
+      FIRST_NAME.maxLength,
+      maxLengthMsg("First name", FIRST_NAME.maxLength),
+    ),
 
-    lastName: yup
-      .string()
-      .defined()
-      .trim()
-      .max(LAST_NAME.maxLength, maxLengthMsg("Last name", LAST_NAME.maxLength)),
+  lastName: yup
+    .string()
+    .defined()
+    .trim()
+    .max(LAST_NAME.maxLength, maxLengthMsg("Last name", LAST_NAME.maxLength)),
 
-    gender: yup
-      .string()
-      .required(notSelectedMsg("Gender"))
-      .oneOf([...GENDER_OPTIONS]),
+  gender: yup
+    .string()
+    .required(notSelectedMsg("Gender"))
+    .oneOf([...GENDER_OPTIONS]),
 
-    email: yup.string().required(emptyMsg("Email")).email(invalidMsg("Email")),
+  email: yup.string().required(emptyMsg("Email")).email(invalidMsg("Email")),
 
-    password: yup
-      .string()
-      .required(emptyMsg("Password"))
-      .min(PASSWORD.minLength, minLengthMsg("Password", PASSWORD.minLength))
-      .max(PASSWORD.maxLength, maxLengthMsg("Password", PASSWORD.maxLength))
-      .test(async (value, context) => {
-        const result = valdiatePassword(value);
-        return typeof result === "string"
-          ? context.createError({ message: result })
-          : result;
-      }),
-  },
-);
+  password: yup
+    .string()
+    .required(emptyMsg("Password"))
+    .min(PASSWORD.minLength, minLengthMsg("Password", PASSWORD.minLength))
+    .max(PASSWORD.maxLength, maxLengthMsg("Password", PASSWORD.maxLength))
+    .test(async (value, context) => {
+      const result = valdiatePassword(value);
+      return typeof result === "string"
+        ? context.createError({ message: result })
+        : result;
+    }),
+});
